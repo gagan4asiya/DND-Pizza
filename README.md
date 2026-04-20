@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# DND Cafeteria
 
 TODO: Document your project here
