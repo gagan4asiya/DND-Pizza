@@ -1,5 +1,14 @@
+import { useState, useEffect } from "react";
 import { Phone, MessageCircle, MapPin, Leaf, Clock, Sparkles, Pizza, Sandwich, Coffee, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 const PHONE = "+917898265977";
 const WHATSAPP_URL = `https://wa.me/917898265977?text=${encodeURIComponent("Hi! I'd like to place an order from DND Cafeteria 🍔")}`;
 
@@ -78,6 +87,20 @@ const REVIEWS = [
 ];
 
 const Index = () => {
+  const [api, setApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [api]);
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* NAV */}
@@ -278,25 +301,42 @@ const Index = () => {
           <p className="text-muted-foreground mt-3 text-lg">See what people are saying about us</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 max-w-7xl mx-auto">
-          {REVIEWS.map((review, i) => (
-            <div key={i} className="bg-card border border-border/60 rounded-2xl p-6 shadow-card hover:border-primary/40 hover:-translate-y-1 transition-all flex flex-col gap-4 group relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-500/5 blur-3xl rounded-full -mr-10 -mt-10 transition-all group-hover:bg-yellow-500/10"></div>
-              <div className="flex gap-1 text-yellow-500 relative z-10">
-                {[...Array(review.rating)].map((_, j) => (
-                  <Star key={j} className="w-4 h-4 fill-current" />
-                ))}
-              </div>
-              <p className="text-foreground/90 text-[15px] font-medium leading-snug group-hover:text-primary transition-colors relative z-10">"{review.text}"</p>
-              <div className="mt-auto pt-4 border-t border-border/50 flex flex-col relative z-10">
-                <span className="font-bold text-sm">{review.name}</span>
-                <span className="text-xs text-muted-foreground font-medium mt-1">{review.time}</span>
-                {review.meta && (
-                  <span className="text-[10px] text-muted-foreground/70 uppercase tracking-widest mt-1">{review.meta}</span>
-                )}
-              </div>
+        <div className="max-w-7xl mx-auto px-1 md:px-12 relative">
+          <Carousel
+            setApi={setApi}
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-3 mt-1 pb-4">
+              {REVIEWS.map((review, i) => (
+                <CarouselItem key={i} className="pl-3 basis-[85%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                  <div className="h-full bg-card border border-border/60 rounded-2xl p-6 shadow-card hover:border-primary/40 hover:-translate-y-1 transition-all flex flex-col gap-4 group relative overflow-hidden select-none">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-500/5 blur-3xl rounded-full -mr-10 -mt-10 transition-all group-hover:bg-yellow-500/10"></div>
+                    <div className="flex gap-1 text-yellow-500 relative z-10">
+                      {[...Array(review.rating)].map((_, j) => (
+                        <Star key={j} className="w-4 h-4 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-foreground/90 text-[15px] font-medium leading-snug group-hover:text-primary transition-colors relative z-10 whitespace-normal">"{review.text}"</p>
+                    <div className="mt-auto pt-4 border-t border-border/50 flex flex-col relative z-10">
+                      <span className="font-bold text-sm">{review.name}</span>
+                      <span className="text-xs text-muted-foreground font-medium mt-1">{review.time}</span>
+                      {review.meta && (
+                         <span className="text-[10px] text-muted-foreground/70 uppercase tracking-widest mt-1">{review.meta}</span>
+                      )}
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="hidden md:block">
+              <CarouselPrevious className="-left-6 xl:-left-12" />
+              <CarouselNext className="-right-6 xl:-right-12" />
             </div>
-          ))}
+          </Carousel>
         </div>
       </section>
 
